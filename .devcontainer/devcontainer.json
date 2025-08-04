@@ -1,0 +1,69 @@
+// フォーマットの詳細については、https://aka.ms/devcontainer.json を参照してください。設定オプションについては、
+// README を参照: https://github.com/devcontainers/templates/tree/main/src/docker-existing-docker-compose
+{
+  "name": "Go Validator Dev Container",
+
+  // 'dockerComposeFile' リストは、compose ファイルが複数ある場合や異なる名前を使用する場合に更新してください。
+  // .devcontainer/docker-compose.yml ファイルには、必要なオーバーライドを記述します。
+  "dockerComposeFile": ["../compose.yaml"],
+
+  // 'service' プロパティは、VS Code が使用するコンテナのサービス名です。
+  // この値と .devcontainer/docker-compose.yml を実際のサービス名に更新してください。
+  "service": "app",
+
+  // オプションの 'workspaceFolder' プロパティは、VS Code がデフォルトで開くパスです。
+  // 通常は .devcontainer/docker-compose.yml でファイルマウントされています。
+  "workspaceFolder": "/app",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // dev コンテナに追加する機能。詳細: https://containers.dev/features。
+  // "features": {},
+
+  // 'forwardPorts' を使用して、コンテナ内のポートをローカルで利用可能にします。
+  // "forwardPorts": [],
+
+  // Docker Compose 設定で特定のサービスを起動したい場合は、次の行のコメントを外してください。
+  // "runServices": [],
+
+  // VS Code がシャットダウンした後もコンテナを実行し続けたい場合は、次の行のコメントを外してください。
+  // "shutdownAction": "none",
+
+  // コンテナ作成後にコマンドを実行したい場合は、次の行のコメントを外してください。
+  "postCreateCommand": "git config --global --add safe.directory /app || echo 'Git config already set or read-only'",
+
+  // ツール固有のプロパティを設定します。
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "[go]": {
+          "editor.defaultFormatter": "golang.go"
+        }
+      },
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "oderwat.indent-rainbow",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced",
+        "noy-shimotsuki.hyogai-kanji-checker",
+        "streetsidesoftware.code-spell-checker",
+        "mhutchie.git-graph",
+        "GitHub.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "GitHub.copilot",
+        "heaths.vscode-guid",
+        "vitest.explorer",
+        "ryanluker.vscode-coverage-gutters",
+        "github.vscode-github-actions",
+        "kisstkondoros.vscode-codemetrics",
+        "golang.go",
+        "anthropic.claude-code"
+      ]
+    }
+  },
+
+  // Go開発用ユーザーとして接続
+  "remoteUser": "godev"
+}

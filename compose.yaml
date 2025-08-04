@@ -1,0 +1,25 @@
+services:
+  app:
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TZ: ${TZ:-Asia/Tokyo}
+    working_dir: /app
+    volumes:
+      - .:/app
+      - go-dev-bashhistory:/commandhistory
+      - go-dev-claude-config:/home/godev/.claude
+      - ~/.ssh:/home/godev/.ssh:ro
+      - ~/.gitconfig:/home/godev/.gitconfig
+    environment:
+      - CLAUDE_CONFIG_DIR=/home/godev/.claude
+      - POWERLEVEL9K_DISABLE_GITSTATUS=true
+      - TZ=${TZ:-Asia/Tokyo}
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+volumes:
+  go-dev-bashhistory:
+  go-dev-claude-config:
