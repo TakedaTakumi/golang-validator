@@ -9,7 +9,7 @@ import (
 )
 
 func TestEmailValidator(t *testing.T) {
-	t.Run("shouldValidateValidEmail", func(t *testing.T) {
+	t.Run("正しい形式のメールアドレスは有効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		validEmails := []string{
@@ -27,7 +27,7 @@ func TestEmailValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldRejectInvalidEmail", func(t *testing.T) {
+	t.Run("不正な形式のメールアドレスは無効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		invalidEmails := []string{
@@ -47,7 +47,7 @@ func TestEmailValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldHandleNonStringInput", func(t *testing.T) {
+	t.Run("文字列以外の入力は無効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		result := validator.Validate(123)
@@ -58,7 +58,7 @@ func TestEmailValidator(t *testing.T) {
 }
 
 func TestEmailValidatorProperties(t *testing.T) {
-	t.Run("propertyValidEmailsShouldPass", func(t *testing.T) {
+	t.Run("プロパティ_生成された有効なメールアドレスは必ず有効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		property := func() bool {
@@ -72,7 +72,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyEmailsWithoutAtShouldFail", func(t *testing.T) {
+	t.Run("プロパティ_アットマークを含まない文字列は必ず無効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		property := func() bool {
@@ -90,7 +90,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyValidationResultsAreConsistent", func(t *testing.T) {
+	t.Run("プロパティ_同じ入力に対する検証結果は常に同一である", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		property := func(input string) bool {
@@ -105,7 +105,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyEmptyStringShouldFail", func(t *testing.T) {
+	t.Run("プロパティ_空文字列は必ず無効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		result := validator.Validate("")

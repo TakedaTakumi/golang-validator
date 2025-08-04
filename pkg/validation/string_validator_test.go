@@ -8,7 +8,7 @@ import (
 )
 
 func TestStringLengthValidator(t *testing.T) {
-	t.Run("shouldValidateMinimumLength", func(t *testing.T) {
+	t.Run("最小文字数境界で正しく検証される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate("ab")
@@ -22,7 +22,7 @@ func TestStringLengthValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldValidateMaximumLength", func(t *testing.T) {
+	t.Run("最大文字数境界で正しく検証される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate("12345678901")
@@ -36,7 +36,7 @@ func TestStringLengthValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldValidateWithinRange", func(t *testing.T) {
+	t.Run("範囲内の文字数は有効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate("hello")
@@ -45,7 +45,7 @@ func TestStringLengthValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldHandleNonStringInput", func(t *testing.T) {
+	t.Run("文字列以外の入力は無効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate(123)
@@ -56,7 +56,7 @@ func TestStringLengthValidator(t *testing.T) {
 }
 
 func TestStringLengthValidatorProperties(t *testing.T) {
-	t.Run("propertyValidStringsWithinRangeShouldPass", func(t *testing.T) {
+	t.Run("プロパティ_範囲内の文字数は必ず有効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(5, 15)
 		
 		property := func(length uint8) bool {
@@ -74,7 +74,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyStringsShorterThanMinShouldFail", func(t *testing.T) {
+	t.Run("プロパティ_最小文字数未満は必ず無効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(5, 15)
 		
 		property := func(length uint8) bool {
@@ -92,7 +92,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyStringsLongerThanMaxShouldFail", func(t *testing.T) {
+	t.Run("プロパティ_最大文字数超過は必ず無効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(5, 15)
 		
 		property := func(length uint8) bool {
@@ -110,7 +110,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyValidationResultsAreConsistent", func(t *testing.T) {
+	t.Run("プロパティ_同じ入力に対する検証結果は常に同一である", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		property := func(input string) bool {

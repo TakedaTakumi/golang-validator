@@ -5,13 +5,13 @@ import (
 )
 
 func TestValidatorInterface(t *testing.T) {
-	t.Run("shouldImplementValidatorInterface", func(t *testing.T) {
+	t.Run("Validatorインターフェースを実装している", func(t *testing.T) {
 		var _ Validator = (*StringLengthValidator)(nil)
 	})
 }
 
 func TestValidationResult(t *testing.T) {
-	t.Run("shouldCreateValidationResult", func(t *testing.T) {
+	t.Run("有効な検証結果が正しく作成される", func(t *testing.T) {
 		result := ValidationResult{
 			IsValid: true,
 			Message: "valid input",
@@ -26,7 +26,7 @@ func TestValidationResult(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldCreateInvalidValidationResult", func(t *testing.T) {
+	t.Run("無効な検証結果が正しく作成される", func(t *testing.T) {
 		result := ValidationResult{
 			IsValid: false,
 			Message: "invalid input",

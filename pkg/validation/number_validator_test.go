@@ -6,7 +6,7 @@ import (
 )
 
 func TestNumberRangeValidator(t *testing.T) {
-	t.Run("shouldValidateIntegerMinimum", func(t *testing.T) {
+	t.Run("整数の最小値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		result := validator.Validate(5)
@@ -20,7 +20,7 @@ func TestNumberRangeValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldValidateIntegerMaximum", func(t *testing.T) {
+	t.Run("整数の最大値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		result := validator.Validate(105)
@@ -34,7 +34,7 @@ func TestNumberRangeValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldValidateFloatMinimum", func(t *testing.T) {
+	t.Run("小数の最小値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10.5, 100.5)
 		
 		result := validator.Validate(9.5)
@@ -48,7 +48,7 @@ func TestNumberRangeValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldValidateFloatMaximum", func(t *testing.T) {
+	t.Run("小数の最大値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10.5, 100.5)
 		
 		result := validator.Validate(101.0)
@@ -62,7 +62,7 @@ func TestNumberRangeValidator(t *testing.T) {
 		}
 	})
 	
-	t.Run("shouldHandleNonNumberInput", func(t *testing.T) {
+	t.Run("数値以外の入力は無効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		result := validator.Validate("not a number")
@@ -73,7 +73,7 @@ func TestNumberRangeValidator(t *testing.T) {
 }
 
 func TestNumberRangeValidatorProperties(t *testing.T) {
-	t.Run("propertyIntegersWithinRangeShouldPass", func(t *testing.T) {
+	t.Run("プロパティ_範囲内の整数は必ず有効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		property := func(num int) bool {
@@ -90,7 +90,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyFloatsWithinRangeShouldPass", func(t *testing.T) {
+	t.Run("プロパティ_範囲内の小数は必ず有効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10.5, 100.5)
 		
 		property := func(num float64) bool {
@@ -107,7 +107,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyNumbersBelowMinShouldFail", func(t *testing.T) {
+	t.Run("プロパティ_最小値未満の数値は必ず無効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(50, 100)
 		
 		property := func(num int) bool {
@@ -124,7 +124,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyNumbersAboveMaxShouldFail", func(t *testing.T) {
+	t.Run("プロパティ_最大値超過の数値は必ず無効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 50)
 		
 		property := func(num int) bool {
@@ -141,7 +141,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		}
 	})
 	
-	t.Run("propertyValidationResultsAreConsistent", func(t *testing.T) {
+	t.Run("プロパティ_同じ入力に対する検証結果は常に同一である", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		property := func(num int) bool {
