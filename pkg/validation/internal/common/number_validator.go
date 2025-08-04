@@ -1,4 +1,4 @@
-package validation
+package common
 
 // NumberRangeValidator validates numbers within specified range
 type NumberRangeValidator struct {

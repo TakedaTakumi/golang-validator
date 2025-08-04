@@ -6,7 +6,13 @@ import (
 
 func TestValidatorInterface(t *testing.T) {
 	t.Run("Validatorインターフェースを実装している", func(t *testing.T) {
-		var _ Validator = (*StringLengthValidator)(nil)
+		emailValidator := NewEmailValidator()
+		numberValidator := NewNumberRangeValidator(0, 100)
+		stringValidator := NewStringLengthValidator(1, 10)
+		
+		var _ Validator = emailValidator
+		var _ Validator = numberValidator
+		var _ Validator = stringValidator
 	})
 }
 

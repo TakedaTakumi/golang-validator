@@ -1,4 +1,4 @@
-package validation
+package common
 
 // StringLengthValidator validates string length within specified range
 type StringLengthValidator struct {

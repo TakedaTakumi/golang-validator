@@ -1,9 +1,15 @@
-package validation
+package common
 
 import (
 	"regexp"
 	"strings"
 )
+
+// ValidationResult represents the result of a validation operation
+type ValidationResult struct {
+	IsValid bool
+	Message string
+}
 
 // EmailValidator validates email address format
 type EmailValidator struct {
