@@ -10,11 +10,11 @@ services:
     volumes:
       - .:/app
       - go-dev-bashhistory:/commandhistory
-      - go-dev-claude-config:/home/godev/.claude
-      - ~/.ssh:/home/godev/.ssh:ro
-      - ~/.gitconfig:/home/godev/.gitconfig
+      - go-dev-claude-config:/root/.claude
+      - ~/.ssh:/root/.ssh:ro
+      - ~/.gitconfig:/root/.gitconfig
     environment:
-      - CLAUDE_CONFIG_DIR=/home/godev/.claude
+      - CLAUDE_CONFIG_DIR=/root/.claude
       - POWERLEVEL9K_DISABLE_GITSTATUS=true
       - TZ=${TZ:-Asia/Tokyo}
     cap_add:

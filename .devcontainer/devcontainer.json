@@ -32,7 +32,7 @@
   // "shutdownAction": "none",
 
   // コンテナ作成後にコマンドを実行したい場合は、次の行のコメントを外してください。
-  "postCreateCommand": "git config --global --add safe.directory /app || echo 'Git config already set or read-only'",
+  "postCreateCommand": "git config --add safe.directory /app",
 
   // ツール固有のプロパティを設定します。
   "customizations": {
@@ -62,8 +62,5 @@
         "anthropic.claude-code"
       ]
     }
-  },
-
-  // Go開発用ユーザーとして接続
-  "remoteUser": "godev"
+  }
 }
