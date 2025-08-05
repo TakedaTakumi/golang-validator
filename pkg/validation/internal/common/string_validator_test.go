@@ -1,10 +1,9 @@
 package common
 
 import (
-	"math/rand"
-	"strings"
 	"testing"
-	"testing/quick"
+	
+	"pgregory.net/rapid"
 )
 
 func TestStringLengthValidator(t *testing.T) {
@@ -59,85 +58,59 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 	t.Run("プロパティ_範囲内の文字数は必ず有効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(5, 15)
 		
-		property := func(length uint8) bool {
-			if length < 5 || length > 15 {
-				return true
-			}
-			
-			testString := generateStringOfLength(int(length))
+		rapid.Check(t, func(t *rapid.T) {
+			length := rapid.IntRange(5, 15).Draw(t, "length")
+			// 文字のスライスを使用して正確な長さの文字列を生成
+			chars := rapid.SliceOfN(rapid.RuneFrom([]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")), length, length).Draw(t, "chars")
+			testString := string(chars)
 			result := validator.Validate(testString)
-			return result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if !result.IsValid {
+				t.Fatalf("expected validation to pass for string of length %d: %s", len(testString), testString)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_最小文字数未満は必ず無効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(5, 15)
 		
-		property := func(length uint8) bool {
-			if length >= 5 {
-				return true
-			}
-			
-			testString := generateStringOfLength(int(length))
+		rapid.Check(t, func(t *rapid.T) {
+			length := rapid.IntRange(0, 4).Draw(t, "length")
+			// 文字のスライスを使用して正確な長さの文字列を生成
+			chars := rapid.SliceOfN(rapid.RuneFrom([]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")), length, length).Draw(t, "chars")
+			testString := string(chars)
 			result := validator.Validate(testString)
-			return !result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result.IsValid {
+				t.Fatalf("expected validation to fail for string of length %d: %s", len(testString), testString)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_最大文字数超過は必ず無効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(5, 15)
 		
-		property := func(length uint8) bool {
-			if length <= 15 {
-				return true
-			}
-			
-			testString := generateStringOfLength(int(length))
+		rapid.Check(t, func(t *rapid.T) {
+			length := rapid.IntRange(16, 50).Draw(t, "length")
+			// 文字のスライスを使用して正確な長さの文字列を生成
+			chars := rapid.SliceOfN(rapid.RuneFrom([]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")), length, length).Draw(t, "chars")
+			testString := string(chars)
 			result := validator.Validate(testString)
-			return !result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result.IsValid {
+				t.Fatalf("expected validation to fail for string of length %d: %s", len(testString), testString)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_同じ入力に対する検証結果は常に同一である", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
-		property := func(input string) bool {
+		rapid.Check(t, func(t *rapid.T) {
+			input := rapid.String().Draw(t, "input")
 			result1 := validator.Validate(input)
 			result2 := validator.Validate(input)
 			
-			return result1.IsValid == result2.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result1.IsValid != result2.IsValid {
+				t.Fatalf("validation results differ for same input: %s", input)
+			}
+		})
 	})
-}
-
-func generateStringOfLength(length int) string {
-	if length == 0 {
-		return ""
-	}
-	
-	chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	var result strings.Builder
-	result.Grow(length)
-	
-	for i := 0; i < length; i++ {
-		result.WriteByte(chars[rand.Intn(len(chars))])
-	}
-	
-	return result.String()
 }

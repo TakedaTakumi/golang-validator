@@ -1,11 +1,10 @@
 package common
 
 import (
-	"fmt"
-	"math/rand"
 	"strings"
 	"testing"
-	"testing/quick"
+	
+	"pgregory.net/rapid"
 )
 
 func TestEmailValidator(t *testing.T) {
@@ -61,48 +60,44 @@ func TestEmailValidatorProperties(t *testing.T) {
 	t.Run("プロパティ_生成された有効なメールアドレスは必ず有効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
-		property := func() bool {
-			email := generateValidEmail()
+		rapid.Check(t, func(t *rapid.T) {
+			email := genValidEmail().Draw(t, "email")
 			result := validator.Validate(email)
-			return result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if !result.IsValid {
+				t.Fatalf("expected validation to pass for valid email: %s", email)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_アットマークを含まない文字列は必ず無効と判定される", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
-		property := func() bool {
-			email := generateStringWithoutAt()
-			if strings.Contains(email, "@") {
-				return true
-			}
+		rapid.Check(t, func(t *rapid.T) {
+			// アットマークを含まない文字列を生成
+			email := rapid.String().
+				Filter(func(s string) bool { return !strings.Contains(s, "@") }).
+				Draw(t, "emailWithoutAt")
 			
 			result := validator.Validate(email)
-			return !result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result.IsValid {
+				t.Fatalf("expected validation to fail for string without @: %s", email)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_同じ入力に対する検証結果は常に同一である", func(t *testing.T) {
 		validator := NewEmailValidator()
 		
-		property := func(input string) bool {
+		rapid.Check(t, func(t *rapid.T) {
+			input := rapid.String().Draw(t, "input")
+			
 			result1 := validator.Validate(input)
 			result2 := validator.Validate(input)
 			
-			return result1.IsValid == result2.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result1.IsValid != result2.IsValid {
+				t.Fatalf("validation results differ for same input: %s", input)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_空文字列は必ず無効と判定される", func(t *testing.T) {
@@ -115,26 +110,26 @@ func TestEmailValidatorProperties(t *testing.T) {
 	})
 }
 
-func generateValidEmail() string {
-	domains := []string{"example.com", "test.org", "sample.net", "demo.co.jp"}
-	localNames := []string{"user", "test", "admin", "contact", "info"}
-	
-	local := localNames[rand.Intn(len(localNames))]
-	domain := domains[rand.Intn(len(domains))]
-	
-	return fmt.Sprintf("%s@%s", local, domain)
-}
-
-func generateStringWithoutAt() string {
-	chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	length := rand.Intn(20) + 1
-	
-	var result strings.Builder
-	result.Grow(length)
-	
-	for i := 0; i < length; i++ {
-		result.WriteByte(chars[rand.Intn(len(chars))])
-	}
-	
-	return result.String()
+// genValidEmail generates valid email addresses for property-based testing
+func genValidEmail() *rapid.Generator[string] {
+	return rapid.Custom(func(t *rapid.T) string {
+		// Valid local part (before @)
+		localPart := rapid.OneOf(
+			rapid.StringMatching(`^[a-zA-Z0-9]+$`),
+			rapid.StringMatching(`^[a-zA-Z0-9]+[._][a-zA-Z0-9]+$`),
+			rapid.StringMatching(`^[a-zA-Z0-9]+\+[a-zA-Z0-9]+$`),
+		).Draw(t, "localPart")
+		
+		// Valid domain
+		domain := rapid.OneOf(
+			rapid.Just("example.com"),
+			rapid.Just("test.org"),
+			rapid.Just("sample.net"),
+			rapid.Just("demo.co.jp"),
+			rapid.StringMatching(`^[a-zA-Z0-9]+\.[a-zA-Z]{2,}$`),
+			rapid.StringMatching(`^[a-zA-Z0-9]+-[a-zA-Z0-9]+\.[a-zA-Z]{2,}$`),
+		).Draw(t, "domain")
+		
+		return localPart + "@" + domain
+	})
 }

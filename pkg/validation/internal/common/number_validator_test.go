@@ -2,7 +2,8 @@ package common
 
 import (
 	"testing"
-	"testing/quick"
+	
+	"pgregory.net/rapid"
 )
 
 func TestNumberRangeValidator(t *testing.T) {
@@ -76,83 +77,62 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 	t.Run("プロパティ_範囲内の整数は必ず有効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
-		property := func(num int) bool {
-			if num < 10 || num > 100 {
-				return true
-			}
-			
+		rapid.Check(t, func(t *rapid.T) {
+			num := rapid.IntRange(10, 100).Draw(t, "num")
 			result := validator.Validate(num)
-			return result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if !result.IsValid {
+				t.Fatalf("expected validation to pass for integer in range: %d", num)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_範囲内の小数は必ず有効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10.5, 100.5)
 		
-		property := func(num float64) bool {
-			if num < 10.5 || num > 100.5 {
-				return true
-			}
-			
+		rapid.Check(t, func(t *rapid.T) {
+			num := rapid.Float64Range(10.5, 100.5).Draw(t, "num")
 			result := validator.Validate(num)
-			return result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if !result.IsValid {
+				t.Fatalf("expected validation to pass for float in range: %f", num)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_最小値未満の数値は必ず無効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(50, 100)
 		
-		property := func(num int) bool {
-			if num >= 50 {
-				return true
-			}
-			
+		rapid.Check(t, func(t *rapid.T) {
+			num := rapid.IntMax(49).Draw(t, "num")
 			result := validator.Validate(num)
-			return !result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result.IsValid {
+				t.Fatalf("expected validation to fail for integer below minimum: %d", num)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_最大値超過の数値は必ず無効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 50)
 		
-		property := func(num int) bool {
-			if num <= 50 {
-				return true
-			}
-			
+		rapid.Check(t, func(t *rapid.T) {
+			num := rapid.IntMin(51).Draw(t, "num")
 			result := validator.Validate(num)
-			return !result.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result.IsValid {
+				t.Fatalf("expected validation to fail for integer above maximum: %d", num)
+			}
+		})
 	})
 	
 	t.Run("プロパティ_同じ入力に対する検証結果は常に同一である", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
-		property := func(num int) bool {
+		rapid.Check(t, func(t *rapid.T) {
+			num := rapid.Int().Draw(t, "num")
 			result1 := validator.Validate(num)
 			result2 := validator.Validate(num)
 			
-			return result1.IsValid == result2.IsValid
-		}
-		
-		if err := quick.Check(property, nil); err != nil {
-			t.Errorf("property failed: %v", err)
-		}
+			if result1.IsValid != result2.IsValid {
+				t.Fatalf("validation results differ for same input: %d", num)
+			}
+		})
 	})
 }
