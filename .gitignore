@@ -31,4 +31,5 @@ go.work.sum
 # .idea/
 # .vscode/
 
-.local.json
+*.local.json
+

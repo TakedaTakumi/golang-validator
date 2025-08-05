@@ -12,7 +12,6 @@ services:
       - go-dev-bashhistory:/commandhistory
       - go-dev-claude-config:/root/.claude
       - ~/.ssh:/root/.ssh:ro
-      - ~/.gitconfig:/root/.gitconfig
     environment:
       - CLAUDE_CONFIG_DIR=/root/.claude
       - POWERLEVEL9K_DISABLE_GITSTATUS=true
