@@ -54,7 +54,6 @@
         "eamodio.gitlens",
         "GitHub.copilot",
         "heaths.vscode-guid",
-        "vitest.explorer",
         "ryanluker.vscode-coverage-gutters",
         "github.vscode-github-actions",
         "kisstkondoros.vscode-codemetrics",
@@ -62,5 +61,6 @@
         "anthropic.claude-code"
       ]
     }
-  }
+  },
+  "remoteUser": "vscode"
 }
