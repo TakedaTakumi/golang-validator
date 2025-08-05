@@ -3,6 +3,7 @@ package common
 import (
 	"testing"
 	
+	"github.com/stretchr/testify/assert"
 	"pgregory.net/rapid"
 )
 
@@ -11,65 +12,47 @@ func TestNumberRangeValidator(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		result := validator.Validate(5)
-		if result.IsValid {
-			t.Errorf("expected validation to fail for integer below minimum")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for integer below minimum")
 		
 		result = validator.Validate(10)
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for integer at minimum")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for integer at minimum")
 	})
 	
 	t.Run("整数の最大値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		result := validator.Validate(105)
-		if result.IsValid {
-			t.Errorf("expected validation to fail for integer above maximum")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for integer above maximum")
 		
 		result = validator.Validate(100)
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for integer at maximum")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for integer at maximum")
 	})
 	
 	t.Run("小数の最小値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10.5, 100.5)
 		
 		result := validator.Validate(9.5)
-		if result.IsValid {
-			t.Errorf("expected validation to fail for float below minimum")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for float below minimum")
 		
 		result = validator.Validate(10.5)
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for float at minimum")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for float at minimum")
 	})
 	
 	t.Run("小数の最大値境界で正しく検証される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10.5, 100.5)
 		
 		result := validator.Validate(101.0)
-		if result.IsValid {
-			t.Errorf("expected validation to fail for float above maximum")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for float above maximum")
 		
 		result = validator.Validate(100.5)
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for float at maximum")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for float at maximum")
 	})
 	
 	t.Run("数値以外の入力は無効と判定される", func(t *testing.T) {
 		validator := NewNumberRangeValidator(10, 100)
 		
 		result := validator.Validate("not a number")
-		if result.IsValid {
-			t.Errorf("expected validation to fail for non-number input")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for non-number input")
 	})
 }
 
@@ -80,9 +63,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		rapid.Check(t, func(t *rapid.T) {
 			num := rapid.IntRange(10, 100).Draw(t, "num")
 			result := validator.Validate(num)
-			if !result.IsValid {
-				t.Fatalf("expected validation to pass for integer in range: %d", num)
-			}
+			assert.True(t, result.IsValid, "expected validation to pass for integer in range: %d", num)
 		})
 	})
 	
@@ -92,9 +73,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		rapid.Check(t, func(t *rapid.T) {
 			num := rapid.Float64Range(10.5, 100.5).Draw(t, "num")
 			result := validator.Validate(num)
-			if !result.IsValid {
-				t.Fatalf("expected validation to pass for float in range: %f", num)
-			}
+			assert.True(t, result.IsValid, "expected validation to pass for float in range: %f", num)
 		})
 	})
 	
@@ -104,9 +83,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		rapid.Check(t, func(t *rapid.T) {
 			num := rapid.IntMax(49).Draw(t, "num")
 			result := validator.Validate(num)
-			if result.IsValid {
-				t.Fatalf("expected validation to fail for integer below minimum: %d", num)
-			}
+			assert.False(t, result.IsValid, "expected validation to fail for integer below minimum: %d", num)
 		})
 	})
 	
@@ -116,9 +93,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 		rapid.Check(t, func(t *rapid.T) {
 			num := rapid.IntMin(51).Draw(t, "num")
 			result := validator.Validate(num)
-			if result.IsValid {
-				t.Fatalf("expected validation to fail for integer above maximum: %d", num)
-			}
+			assert.False(t, result.IsValid, "expected validation to fail for integer above maximum: %d", num)
 		})
 	})
 	
@@ -130,9 +105,7 @@ func TestNumberRangeValidatorProperties(t *testing.T) {
 			result1 := validator.Validate(num)
 			result2 := validator.Validate(num)
 			
-			if result1.IsValid != result2.IsValid {
-				t.Fatalf("validation results differ for same input: %d", num)
-			}
+			assert.Equal(t, result1.IsValid, result2.IsValid, "validation results differ for same input: %d", num)
 		})
 	})
 }

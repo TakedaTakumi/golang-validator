@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 	
+	"github.com/stretchr/testify/assert"
 	"pgregory.net/rapid"
 )
 
@@ -20,9 +21,7 @@ func TestEmailValidator(t *testing.T) {
 		
 		for _, email := range validEmails {
 			result := validator.Validate(email)
-			if !result.IsValid {
-				t.Errorf("expected validation to pass for valid email: %s", email)
-			}
+			assert.True(t, result.IsValid, "expected validation to pass for valid email: %s", email)
 		}
 	})
 	
@@ -40,9 +39,7 @@ func TestEmailValidator(t *testing.T) {
 		
 		for _, email := range invalidEmails {
 			result := validator.Validate(email)
-			if result.IsValid {
-				t.Errorf("expected validation to fail for invalid email: %s", email)
-			}
+			assert.False(t, result.IsValid, "expected validation to fail for invalid email: %s", email)
 		}
 	})
 	
@@ -50,9 +47,7 @@ func TestEmailValidator(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		result := validator.Validate(123)
-		if result.IsValid {
-			t.Errorf("expected validation to fail for non-string input")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for non-string input")
 	})
 }
 
@@ -63,9 +58,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 		rapid.Check(t, func(t *rapid.T) {
 			email := genValidEmail().Draw(t, "email")
 			result := validator.Validate(email)
-			if !result.IsValid {
-				t.Fatalf("expected validation to pass for valid email: %s", email)
-			}
+			assert.True(t, result.IsValid, "expected validation to pass for valid email: %s", email)
 		})
 	})
 	
@@ -79,9 +72,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 				Draw(t, "emailWithoutAt")
 			
 			result := validator.Validate(email)
-			if result.IsValid {
-				t.Fatalf("expected validation to fail for string without @: %s", email)
-			}
+			assert.False(t, result.IsValid, "expected validation to fail for string without @: %s", email)
 		})
 	})
 	
@@ -94,9 +85,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 			result1 := validator.Validate(input)
 			result2 := validator.Validate(input)
 			
-			if result1.IsValid != result2.IsValid {
-				t.Fatalf("validation results differ for same input: %s", input)
-			}
+			assert.Equal(t, result1.IsValid, result2.IsValid, "validation results differ for same input: %s", input)
 		})
 	})
 	
@@ -104,9 +93,7 @@ func TestEmailValidatorProperties(t *testing.T) {
 		validator := NewEmailValidator()
 		
 		result := validator.Validate("")
-		if result.IsValid {
-			t.Errorf("expected validation to fail for empty string")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for empty string")
 	})
 }
 

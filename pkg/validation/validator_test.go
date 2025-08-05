@@ -2,6 +2,8 @@ package validation
 
 import (
 	"testing"
+	
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidatorInterface(t *testing.T) {
@@ -23,13 +25,9 @@ func TestValidationResult(t *testing.T) {
 			Message: "valid input",
 		}
 		
-		if !result.IsValid {
-			t.Errorf("expected IsValid to be true, got %v", result.IsValid)
-		}
+		assert.True(t, result.IsValid, "expected IsValid to be true")
 		
-		if result.Message != "valid input" {
-			t.Errorf("expected Message to be 'valid input', got %v", result.Message)
-		}
+		assert.Equal(t, "valid input", result.Message, "expected Message to be 'valid input'")
 	})
 	
 	t.Run("無効な検証結果が正しく作成される", func(t *testing.T) {
@@ -38,12 +36,8 @@ func TestValidationResult(t *testing.T) {
 			Message: "invalid input",
 		}
 		
-		if result.IsValid {
-			t.Errorf("expected IsValid to be false, got %v", result.IsValid)
-		}
+		assert.False(t, result.IsValid, "expected IsValid to be false")
 		
-		if result.Message != "invalid input" {
-			t.Errorf("expected Message to be 'invalid input', got %v", result.Message)
-		}
+		assert.Equal(t, "invalid input", result.Message, "expected Message to be 'invalid input'")
 	})
 }

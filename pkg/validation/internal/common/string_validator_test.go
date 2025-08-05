@@ -3,6 +3,7 @@ package common
 import (
 	"testing"
 	
+	"github.com/stretchr/testify/assert"
 	"pgregory.net/rapid"
 )
 
@@ -11,46 +12,34 @@ func TestStringLengthValidator(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate("ab")
-		if result.IsValid {
-			t.Errorf("expected validation to fail for string shorter than minimum length")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for string shorter than minimum length")
 		
 		result = validator.Validate("abc")
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for string at minimum length")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for string at minimum length")
 	})
 	
 	t.Run("最大文字数境界で正しく検証される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate("12345678901")
-		if result.IsValid {
-			t.Errorf("expected validation to fail for string longer than maximum length")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for string longer than maximum length")
 		
 		result = validator.Validate("1234567890")
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for string at maximum length")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for string at maximum length")
 	})
 	
 	t.Run("範囲内の文字数は有効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate("hello")
-		if !result.IsValid {
-			t.Errorf("expected validation to pass for string within valid range")
-		}
+		assert.True(t, result.IsValid, "expected validation to pass for string within valid range")
 	})
 	
 	t.Run("文字列以外の入力は無効と判定される", func(t *testing.T) {
 		validator := NewStringLengthValidator(3, 10)
 		
 		result := validator.Validate(123)
-		if result.IsValid {
-			t.Errorf("expected validation to fail for non-string input")
-		}
+		assert.False(t, result.IsValid, "expected validation to fail for non-string input")
 	})
 }
 
@@ -64,9 +53,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 			chars := rapid.SliceOfN(rapid.RuneFrom([]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")), length, length).Draw(t, "chars")
 			testString := string(chars)
 			result := validator.Validate(testString)
-			if !result.IsValid {
-				t.Fatalf("expected validation to pass for string of length %d: %s", len(testString), testString)
-			}
+			assert.True(t, result.IsValid, "expected validation to pass for string of length %d: %s", len(testString), testString)
 		})
 	})
 	
@@ -79,9 +66,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 			chars := rapid.SliceOfN(rapid.RuneFrom([]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")), length, length).Draw(t, "chars")
 			testString := string(chars)
 			result := validator.Validate(testString)
-			if result.IsValid {
-				t.Fatalf("expected validation to fail for string of length %d: %s", len(testString), testString)
-			}
+			assert.False(t, result.IsValid, "expected validation to fail for string of length %d: %s", len(testString), testString)
 		})
 	})
 	
@@ -94,9 +79,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 			chars := rapid.SliceOfN(rapid.RuneFrom([]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")), length, length).Draw(t, "chars")
 			testString := string(chars)
 			result := validator.Validate(testString)
-			if result.IsValid {
-				t.Fatalf("expected validation to fail for string of length %d: %s", len(testString), testString)
-			}
+			assert.False(t, result.IsValid, "expected validation to fail for string of length %d: %s", len(testString), testString)
 		})
 	})
 	
@@ -108,9 +91,7 @@ func TestStringLengthValidatorProperties(t *testing.T) {
 			result1 := validator.Validate(input)
 			result2 := validator.Validate(input)
 			
-			if result1.IsValid != result2.IsValid {
-				t.Fatalf("validation results differ for same input: %s", input)
-			}
+			assert.Equal(t, result1.IsValid, result2.IsValid, "validation results differ for same input: %s", input)
 		})
 	})
 }
